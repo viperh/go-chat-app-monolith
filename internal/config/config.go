@@ -1,10 +1,11 @@
 package config
 
 import (
-	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"strings"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -12,6 +13,7 @@ type Config struct {
 	PostgresUser     string
 	PostgresPassword string
 	PostgresDb       string
+	PostgresPort     string
 }
 
 func MustLoad() *Config {
