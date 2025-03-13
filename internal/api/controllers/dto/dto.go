@@ -10,3 +10,7 @@ type RegisterReq struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
+
+type GetUserByIdReq struct {
+	ID uint `json:"id"`
+}

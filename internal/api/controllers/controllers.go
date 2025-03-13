@@ -1,24 +1,28 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
 	"go-chat-app-monolith/internal/api/controllers/dto"
+	"go-chat-app-monolith/internal/api/middlewares"
 	"go-chat-app-monolith/internal/models"
 	"go-chat-app-monolith/internal/pkg/token"
 	"go-chat-app-monolith/internal/pkg/users"
-	"golang.org/x/crypto/bcrypt"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Controller struct {
 	UserService  *users.Service
 	TokenService *token.Service
+	Middleware   *middlewares.Middleware
 }
 
-func NewController(us *users.Service, tokenService *token.Service) *Controller {
+func NewController(us *users.Service, tokenService *token.Service, middleware *middlewares.Middleware) *Controller {
 	return &Controller{
 		UserService:  us,
 		TokenService: tokenService,
+		Middleware:   middleware,
 	}
 }
 
@@ -86,4 +90,8 @@ func (c *Controller) Register(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "User created successfully"})
 
+}
+
+func (c *Controller) GetUserById(ctx *gin.Context) {
+	
 }
