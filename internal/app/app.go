@@ -47,7 +47,7 @@ func NewApp() *App {
 }
 
 func (a *App) Run() {
-	// gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(gin.ReleaseMode)
 	address := fmt.Sprintf(":%s", a.Config.ApiPort)
 	err := a.Engine.Run(address)
 	if err != nil {
