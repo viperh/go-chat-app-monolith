@@ -2,15 +2,15 @@ package app
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"go-chat-app-monolith/internal/api/controllers"
 	"go-chat-app-monolith/internal/api/middlewares"
 	"go-chat-app-monolith/internal/api/routes"
 	"go-chat-app-monolith/internal/config"
 	"go-chat-app-monolith/internal/pkg/provider"
+	"go-chat-app-monolith/internal/pkg/sockets"
 	"go-chat-app-monolith/internal/pkg/token"
 	"go-chat-app-monolith/internal/pkg/users"
-
-	"github.com/gin-gonic/gin"
 )
 
 type App struct {
@@ -28,7 +28,8 @@ func NewApp() *App {
 	userService := users.NewService(prov)
 	jwtService := token.NewService(cfg)
 	mw := middlewares.NewMiddleware(jwtService)
-	controller := controllers.NewController(userService, jwtService, mw)
+	ws := sockets.NewService()
+	controller := controllers.NewController(userService, jwtService, mw, ws)
 	engine := gin.Default()
 
 	// test-only
