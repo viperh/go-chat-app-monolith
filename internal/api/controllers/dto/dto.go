@@ -14,7 +14,3 @@ type RegisterReq struct {
 type GetUserByIdReq struct {
 	ID uint `json:"id"`
 }
-
-type AuthHeader struct {
-	Token string `header:"Authorization"`
-}

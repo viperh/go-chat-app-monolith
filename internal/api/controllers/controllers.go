@@ -1,17 +1,15 @@
 package controllers
 
 import (
+	"github.com/gin-gonic/gin"
 	"go-chat-app-monolith/internal/api/controllers/dto"
 	"go-chat-app-monolith/internal/api/middlewares"
 	"go-chat-app-monolith/internal/models"
 	"go-chat-app-monolith/internal/pkg/sockets"
 	"go-chat-app-monolith/internal/pkg/token"
 	"go-chat-app-monolith/internal/pkg/users"
-	"net/http"
-	"strings"
-
-	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
+	"net/http"
 )
 
 type Controller struct {
@@ -116,29 +114,13 @@ func (c *Controller) GetUserById(ctx *gin.Context) {
 }
 
 func (c *Controller) UpgradeToWs(ctx *gin.Context) {
-	h := &dto.AuthHeader{}
-
-	err := ctx.ShouldBindHeader(h)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	tk := strings.Split(h.Token, "Bearer ")[1]
-
-	userId, err := c.TokenService.ValidateToken(tk)
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-		return
-	}
-
 	conn, err := c.SocketGateway.Upgrade(ctx.Writer, ctx.Request)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.SocketGateway.AddConn(userId, conn)
-	go c.SocketGateway.HandleConn(userId, conn)
+	c.SocketGateway.AuthorizeClient(conn)
+	go c.SocketGateway.HandleConn(conn)
 
 }

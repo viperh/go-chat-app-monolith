@@ -47,7 +47,7 @@ func (s *Service) ValidateToken(tokenString string) (uint, error) {
 		return 0, err
 	}
 
-	userId := claims["userId"].(uint)
+	userId := claims["userId"].(float64)
 
-	return userId, nil
+	return uint(userId), nil
 }

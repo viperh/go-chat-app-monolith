@@ -30,7 +30,7 @@ func NewApp() *App {
 	userService := users.NewService(prov)
 	jwtService := token.NewService(cfg)
 	mw := middlewares.NewMiddleware(jwtService)
-	ws := sockets.NewService()
+	ws := sockets.NewService(jwtService)
 	controller := controllers.NewController(userService, jwtService, mw, ws)
 	engine := gin.Default()
 

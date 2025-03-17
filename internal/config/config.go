@@ -15,9 +15,8 @@ type Config struct {
 	PostgresDb       string
 	PostgresPort     string
 
-	JwtSecret  string
-	ApiPort    string
-	SocketPort string
+	JwtSecret string
+	ApiPort   string
 }
 
 func MustLoad() *Config {
@@ -34,7 +33,6 @@ func MustLoad() *Config {
 
 	jwtSecret := failOnEmpty("JWT_SECRET", os.Getenv("JWT_SECRET"))
 	apiPort := failOnEmpty("API_PORT", os.Getenv("API_PORT"))
-	socketPort := failOnEmpty("SOCKET_PORT", os.Getenv("SOCKET_PORT"))
 
 	return &Config{
 		PostgresHost:     pgHost,
@@ -44,7 +42,6 @@ func MustLoad() *Config {
 		JwtSecret:        jwtSecret,
 		ApiPort:          apiPort,
 		PostgresPort:     pgPort,
-		SocketPort:       socketPort,
 	}
 
 }
