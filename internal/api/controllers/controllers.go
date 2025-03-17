@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"github.com/gorilla/websocket"
 	"go-chat-app-monolith/internal/api/controllers/dto"
 	"go-chat-app-monolith/internal/api/middlewares"
 	"go-chat-app-monolith/internal/models"
@@ -116,13 +115,13 @@ func (c *Controller) GetUserById(ctx *gin.Context) {
 
 }
 
-func (c *Controller) UpgradeToWs(ctx *gin.Context) *websocket.Conn {
+func (c *Controller) UpgradeToWs(ctx *gin.Context) {
 	h := &dto.AuthHeader{}
 
 	err := ctx.ShouldBindHeader(h)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return nil
+		return
 	}
 
 	tk := strings.Split(h.Token, "Bearer ")[1]
@@ -130,15 +129,16 @@ func (c *Controller) UpgradeToWs(ctx *gin.Context) *websocket.Conn {
 	userId, err := c.TokenService.ValidateToken(tk)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-		return nil
+		return
 	}
 
 	conn, err := c.SocketGateway.Upgrade(ctx.Writer, ctx.Request)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return nil
+		return
 	}
 
-	return conn
+	c.SocketGateway.AddConn(userId, conn)
+	go c.SocketGateway.HandleConn(userId, conn)
 
 }

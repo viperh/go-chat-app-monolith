@@ -2,7 +2,6 @@ package app
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"go-chat-app-monolith/internal/api/controllers"
 	"go-chat-app-monolith/internal/api/middlewares"
 	"go-chat-app-monolith/internal/api/routes"
@@ -11,15 +10,18 @@ import (
 	"go-chat-app-monolith/internal/pkg/sockets"
 	"go-chat-app-monolith/internal/pkg/token"
 	"go-chat-app-monolith/internal/pkg/users"
+
+	"github.com/gin-gonic/gin"
 )
 
 type App struct {
-	Config       *config.Config
-	AppProvider  *provider.Provider
-	UserService  *users.Service
-	TokenService *token.Service
-	Controller   *controllers.Controller
-	Engine       *gin.Engine
+	Config        *config.Config
+	AppProvider   *provider.Provider
+	UserService   *users.Service
+	TokenService  *token.Service
+	Controller    *controllers.Controller
+	Engine        *gin.Engine
+	SocketService *sockets.Service
 }
 
 func NewApp() *App {
@@ -38,12 +40,13 @@ func NewApp() *App {
 	routes.SetRoutes(engine, controller)
 
 	return &App{
-		Config:       cfg,
-		AppProvider:  prov,
-		UserService:  userService,
-		TokenService: jwtService,
-		Controller:   controller,
-		Engine:       engine,
+		Config:        cfg,
+		AppProvider:   prov,
+		UserService:   userService,
+		TokenService:  jwtService,
+		Controller:    controller,
+		Engine:        engine,
+		SocketService: ws,
 	}
 }
 
