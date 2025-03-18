@@ -29,7 +29,7 @@ func NewMigration(cfg *config.Config) *Migration {
 }
 
 func (m *Migration) Up() {
-	err := m.Db.AutoMigrate(&models.User{}, &models.Message{})
+	err := m.Db.AutoMigrate(&models.User{}, &models.Message{}, &models.Room{})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -39,7 +39,7 @@ func (m *Migration) Up() {
 }
 
 func (m *Migration) Down() {
-	err := m.Db.Migrator().DropTable(&models.User{}, &models.Message{})
+	err := m.Db.Migrator().DropTable(&models.User{}, &models.Message{}, &models.Room{})
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -1,7 +1,6 @@
 package sockets
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"go-chat-app-monolith/internal/pkg/token"
@@ -33,7 +32,6 @@ func NewService(jwtService *token.Service) *Service {
 
 func (s *Service) Upgrade(w gin.ResponseWriter, r *http.Request) (*websocket.Conn, error) {
 	conn, err := s.Upgrader.Upgrade(w, r, nil)
-	fmt.Println("Upgrading connection")
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +40,6 @@ func (s *Service) Upgrade(w gin.ResponseWriter, r *http.Request) (*websocket.Con
 
 func (s *Service) AuthorizeClient(conn *websocket.Conn) {
 	msg := &AuthMessage{}
-	defer conn.Close()
 	for {
 		err := conn.ReadJSON(msg)
 		if err != nil {
@@ -58,21 +55,21 @@ func (s *Service) AuthorizeClient(conn *websocket.Conn) {
 }
 
 func (s *Service) HandleConn(conn *websocket.Conn) {
-	defer conn.Close()
 	for {
 		_, msg, err := conn.ReadMessage()
 		if err != nil {
-			if websocket.IsCloseError(err) || websocket.IsUnexpectedCloseError(err) {
-				return
-			}
+			break
 		}
-		s.Broadcast(conn, msg)
+		go s.Broadcast(conn, msg)
 	}
+	conn.Close()
 }
 
 func (s *Service) Broadcast(origin *websocket.Conn, msg []byte) {
 	for _, conn := range s.Conns {
-
+		if conn == origin {
+			continue
+		}
 		err := conn.WriteMessage(websocket.TextMessage, msg)
 		if err != nil {
 			_ = origin.WriteMessage(websocket.TextMessage, []byte("Error broadcasting message: "+err.Error()))

@@ -32,10 +32,10 @@ func NewApp() *App {
 	mw := middlewares.NewMiddleware(jwtService)
 	ws := sockets.NewService(jwtService)
 	controller := controllers.NewController(userService, jwtService, mw, ws)
-	engine := gin.Default()
 
-	// test-only
-	engine.Use(gin.Logger())
+	// prod only
+	// gin.SetMode(gin.ReleaseMode)
+	engine := gin.Default()
 
 	routes.SetRoutes(engine, controller)
 
@@ -51,7 +51,7 @@ func NewApp() *App {
 }
 
 func (a *App) Run() {
-	gin.SetMode(gin.ReleaseMode)
+
 	address := fmt.Sprintf(":%s", a.Config.ApiPort)
 	err := a.Engine.Run(address)
 	if err != nil {
