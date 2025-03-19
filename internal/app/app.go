@@ -31,6 +31,7 @@ func NewApp() *App {
 	jwtService := token.NewService(cfg)
 	mw := middlewares.NewMiddleware(jwtService)
 	ws := sockets.NewService(jwtService)
+
 	controller := controllers.NewController(userService, jwtService, mw, ws)
 
 	// prod only

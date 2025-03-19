@@ -109,8 +109,46 @@ func (c *Controller) GetUserById(ctx *gin.Context) {
 		return
 	}
 
+	res := &dto.GetUserByIdRes{}
+	res.ID = user.ID
+	res.Username = user.Username
+	res.Email = user.Email
+
 	ctx.JSON(http.StatusOK, gin.H{"user": user})
 
+}
+
+func (c *Controller) UpdateUser(ctx *gin.Context) {
+	req := &dto.UpdateUserReq{}
+
+	err := ctx.ShouldBindBodyWithJSON(req)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := c.UserService.GetUserById(req.ID)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	user.Username = req.Username
+	user.Email = req.Email
+	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	user.Password = string(hash)
+
+	err = c.UserService.UpdateUser(user)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
 }
 
 func (c *Controller) UpgradeToWs(ctx *gin.Context) {
@@ -123,4 +161,8 @@ func (c *Controller) UpgradeToWs(ctx *gin.Context) {
 	c.SocketGateway.AuthorizeClient(conn)
 	go c.SocketGateway.HandleConn(conn)
 
+}
+
+func (c *Controller) GerUserById(ctx *gin.Context) {
+	req := &dto.GetUserByIdReq{}
 }

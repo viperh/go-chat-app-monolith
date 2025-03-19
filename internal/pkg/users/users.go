@@ -56,7 +56,6 @@ func (s *Service) GetUserByEmail(email string) (*models.User, error) {
 	}
 
 	return user, nil
-
 }
 
 func (s *Service) GetUserByUsername(username string) (*models.User, error) {
