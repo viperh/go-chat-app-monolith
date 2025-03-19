@@ -162,7 +162,3 @@ func (c *Controller) UpgradeToWs(ctx *gin.Context) {
 	go c.SocketGateway.HandleConn(conn)
 
 }
-
-func (c *Controller) GerUserById(ctx *gin.Context) {
-	req := &dto.GetUserByIdReq{}
-}
